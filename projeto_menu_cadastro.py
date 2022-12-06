@@ -1,4 +1,9 @@
 import os
+import json
+
+
+# with open('C:/Users/claud/Desktop/Projeto Menu/curso.txt','r') as f:
+#     curso = json.load(f)
 
 listaCursos = list()
 listaProfessores = list()
@@ -48,6 +53,22 @@ def excluir():
                 break
 
 
+def carregarCurso():
+    with open('curso.json', 'r') as loadCurso:
+        curso = json.load(loadCurso)
+        listaCursos.append(curso)
+
+
+
+def carregarProfessor():
+    with open('professor.json', 'r') as loadProfessor:
+        professor = json.load(loadProfessor)
+        listaProfessores.append(professor)
+
+
+
+
+
 
 while True:
     os.system('cls')
@@ -68,8 +89,12 @@ while True:
     option = int(input('Opção: '))
     os.system('cls')
     match option:
+        
         # Listar Cursos
         case 1:
+            carregarCurso()
+            carregarProfessor()
+
             print('++++++++++ Lista dos Cursos ++++++++++\n')
             print('Código'.ljust(8), '- Curso'.ljust(15), '- Créditos'.ljust(15), '- Responsável'.ljust(20), "\n")
             for curso in listaCursos:
@@ -79,7 +104,7 @@ while True:
                 for professor in listaProfessores:
                     print(professor["nome_prof"].ljust(20), "\n", end='')
 
-            optionInside = int(input('Para continuar Digite : 1 - Pesquisar, 2 - Voltar: '))
+            optionInside = int(input("\n"'Para continuar Digite : 1 - Pesquisar, 2 - Voltar: '))
             match optionInside:
                 case 1:
                     answer == 's'
@@ -91,12 +116,17 @@ while True:
 
         # Cadastro de Cursos
         case 2:
+            if len(listaCursos) != 0:
+                carregarCurso()
+            if len(listaProfessores) != 0:
+                carregarProfessor()
             os.system('cls')
             answer = 's'
             while answer.lower() == 's':
                 os.system('cls')
                 print('*' * 8, 'Cadastro de Curso', '*' * 8)
                 curso = dict()
+
                 codigoCurso = input("Código do curso: ")
 
                 find = False
@@ -140,13 +170,22 @@ while True:
                             else:
                                 continue
                     else:
-                        curso["professor_responsavel"] = input("Professor responsável: ")
+                        professor["nome_prof"] = input("Nome do Professor: ")
+                        professor["cpf_prof"] = input("Cpf do Professor: ")
+                        professor["formacao_prof"] = input("Formação do Professor: ")
 
                         # curso["professor_responsavel"] = input(professor["mat_prof"],'Informe a matrícula do professor: ')
                         # input("Professor Responsável: ")
 
-                listaCursos.append(curso)
+                #listaCursos.append(curso)
                 answer = input("Deseja continuar cadastrando cursos? (S/N): ").strip()[0].lower()
+
+            with open('curso.json', 'w') as arquivo_curso:
+                json.dump(curso, arquivo_curso)
+
+
+            with open('professor.json', 'w') as arquivo_professor:
+                json.dump(professor, arquivo_professor)
 
         # Pesquisar Cursos
         case 3:
@@ -191,6 +230,7 @@ while True:
                 os.system('cls')
                 print('*'*8,'Cadastro de Professores','*'*8)
                 professor = dict()
+                professor_json = json.dumps(professor)
                 matProf = input("Informe a matrícula do professor: ")
 
                 find = False
@@ -231,13 +271,6 @@ while True:
                         print('Professor não encontrado! ')
             elif answer == '1':
                 continue
-
-
-
-
-
-
-
 
         case 7:
             excluir()
