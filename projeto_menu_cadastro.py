@@ -1,36 +1,11 @@
 import os
 import json
-
-
-# with open('C:/Users/claud/Desktop/Projeto Menu/curso.txt','r') as f:
-#     curso = json.load(f)
-
-listaCursos = list()
-listaProfessores = list()
+import os.path
+import itertools
 
 
 def title(opcao):
     print(opcao)
-
-
-def pesquisa():
-    if len(listaCursos) == 0:
-        print('Não há cursos cadastrados, cadastre um curso no menu principal.')
-    else:
-        print('++++++++++ Pesquisa de Cursos ++++++++++\n')
-        search = input('Informe o o nome do curso ou responsável pelo curso, ou ainda o nome e responsável pelo curso: ')
-        for buscaCurso in listaCursos:
-            if search == f'curso:{curso["nome_curso"]}':
-                print(f'Foi encontrado o curso: {curso["nome_curso"]}.')
-            elif search == f'professor:{professor["nome_prof"]}':
-                print(f'Foi encontrado o Professor: {professor["nome_prof"]}.')
-            elif search == f'curso:{curso["nome_curso"]} professor:{professor["nome_prof"]} ':  #or search == f'professor:{professor["nome_prof"]}':
-                print(f'Foi encontrado o curso: {curso["nome_curso"]}. e o professor: {professor["nome_prof"]}')
-            else:
-                print('Curso/professor não localizado!')
-
-            # elif search.__contains__(curso["nome_curso"]) and buscaCurso.__contains__(professor["nome_prof"]):
-            #     print(f'Foi encontrado o curso: {curso["nome_curso"]}. e o professor: {professor["nome_prof"]}')
 
 
 def excluir():
@@ -52,20 +27,70 @@ def excluir():
             else:
                 break
 
+def pesquisa():
+    # if len(listaCursos) == 0:
+    #     print('Não há cursos cadastrados, cadastre um curso no menu principal.')
+    # else:
+        print('++++++++++ Pesquisa de Cursos ++++++++++\n')
+        search = input('Informe o o nome do curso ou responsável pelo curso, ou ainda o nome e responsável pelo curso: ')
+        for curso, professor in zip(listaCursos, listaProfessores):
+            if search == curso["nome_curso"]:
+                print(f'Foi encontrado o curso: {curso["nome_curso"]}.')
+                break
+            elif search == f'professor:{professor["nome_prof"]}':
+                print(f'Foi encontrado o Professor: {professor["nome_prof"]}.')
+                break
+            elif search == f'curso:{curso["nome_curso"]} professor:{professor["nome_prof"]} ':  #or search == f'professor:{professor["nome_prof"]}':
+                print(f'Foi encontrado o curso: {curso["nome_curso"]}. e o professor: {professor["nome_prof"]}')
+                break
+            else:
+                print('Curso/professor não localizado!')
 
-def carregarCurso():
-    with open('curso.json', 'r') as loadCurso:
-        curso = json.load(loadCurso)
-        listaCursos.append(curso)
 
 
 
-def carregarProfessor():
-    with open('professor.json', 'r') as loadProfessor:
-        professor = json.load(loadProfessor)
-        listaProfessores.append(professor)
+
+def carregarDadosCurso(nome_arquivo):
+    dados = None
+    if nome_arquivo == 'curso':
+        arquivo = nome_arquivo + '.json'
+        if os.path.exists(arquivo):
+            with open(arquivo, 'r') as json_file:
+                dados = json.load(json_file)
+        else:
+            dados = list()
+
+    return dados
 
 
+def carregarDadosProfessor(nome_arquivo):
+    dados = None
+    if nome_arquivo == 'professor':
+        arquivo = nome_arquivo + '.json'
+        if os.path.exists(arquivo):
+            with open(arquivo, 'r') as json_file:
+                dados = json.load(json_file)
+        else:
+            dados = list()
+
+    return dados
+
+
+def salvarDadosProfessor(nome, lista):
+    if nome == 'professor':
+        with open(nome + '.json', 'w') as json_file:
+            json.dump(lista, json_file)
+
+
+
+def salvarDadosCurso(nome, lista):
+    if nome == 'curso':
+        with open(nome + '.json', 'w') as json_file:
+            json.dump(lista, json_file)
+
+
+listaCursos = carregarDadosCurso('curso')
+listaProfessores = carregarDadosProfessor('professor')
 
 
 
@@ -89,49 +114,52 @@ while True:
     option = int(input('Opção: '))
     os.system('cls')
     match option:
-        
         # Listar Cursos
         case 1:
-            carregarCurso()
-            carregarProfessor()
-
             print('++++++++++ Lista dos Cursos ++++++++++\n')
-            print('Código'.ljust(8), '- Curso'.ljust(15), '- Créditos'.ljust(15), '- Responsável'.ljust(20), "\n")
-            for curso in listaCursos:
-                print(curso["codigo_curso"].ljust(12), end='')
-                print(curso["nome_curso"].ljust(15), end='')
-                print(curso["total_creditos"].ljust(18), end='')
-                for professor in listaProfessores:
-                    print(professor["nome_prof"].ljust(20), "\n", end='')
+            print('Código'.ljust(8), '- Curso'.ljust(25), '- Créditos'.ljust(20), '- Responsável'.ljust(20), "\n")
+            for curso,professor in zip(listaCursos, listaProfessores):
+                print(curso["codigo_curso"].ljust(10), end='')
+                print(curso["nome_curso"].ljust(27), end='')
+                print(curso["total_creditos"].ljust(21), end='')
+                print(professor["nome_prof"].ljust(20), "\n", end='')
 
-            optionInside = int(input("\n"'Para continuar Digite : 1 - Pesquisar, 2 - Voltar: '))
+            optionInside = int(input("\n"'Para continuar digite   (1)Pesquisar ou (2)Voltar: '))
             match optionInside:
                 case 1:
                     answer == 's'
                     while answer == 's':
-                        pesquisa()
+                        print('++++++++++ Pesquisa de Cursos ++++++++++\n')
+                        search = input(
+                            'Informe o o nome do curso ou responsável pelo curso, ou ainda o nome e responsável pelo curso: ')
+                        for curso, professor in zip(listaCursos, listaProfessores):
+                            if search == f'curso:{curso["nome_curso"]}':
+                                print(f'Foi encontrado o curso: {curso["nome_curso"]}.')
+                            elif search == f'professor:{professor["nome_prof"]}':
+                                print(f'Foi encontrado o Professor: {professor["nome_prof"]}.')
+                            elif search == f'curso:{curso["nome_curso"]} professor:{professor["nome_prof"]} ':  # or search == f'professor:{professor["nome_prof"]}':
+                                print(
+                                    f'Foi encontrado o curso: {curso["nome_curso"]}. e o professor: {professor["nome_prof"]}')
+                            else:
+                                print('Curso/professor não localizado!')
                         answer = input("Deseja continuar pesquisando cursos? (S/N): ").strip()[0].lower()
                 case 2:
                     continue
 
         # Cadastro de Cursos
         case 2:
-            if len(listaCursos) != 0:
-                carregarCurso()
-            if len(listaProfessores) != 0:
-                carregarProfessor()
             os.system('cls')
             answer = 's'
             while answer.lower() == 's':
                 os.system('cls')
                 print('*' * 8, 'Cadastro de Curso', '*' * 8)
                 curso = dict()
-
+                professor = dict()
                 codigoCurso = input("Código do curso: ")
 
                 find = False
-                for search_curso in listaCursos:
-                    if codigoCurso == search_curso["codigo_curso"]:
+                for curso in listaCursos:
+                    if codigoCurso == curso["codigo_curso"]:
                         print('Curso já cadastrado')
                         find = True
                         break
@@ -149,45 +177,41 @@ while True:
                                 os.system('cls')
                                 print('*' * 8, 'Cadastro de Professores', '*' * 8)
                                 professor = dict()
-                                matProf = input("Informe a matrícula do professor: ")
+                                matricula = input("Informe a matrícula do professor: ")
 
                                 find = False
                                 for search_prof in listaProfessores:
-                                    if matProf == search_prof["mat_prof"]:
+                                    if matricula == search_prof["mat_prof"]:
                                         print('Professor já cadastrado')
                                         find = True
                                         break
 
                                 if not find:
-                                    professor["mat_prof"] = matProf
+                                    professor["mat_prof"] = matricula
                                     professor["nome_prof"] = input("Nome do Professor: ")
                                     professor["cpf_prof"] = input("Cpf do Professor: ")
                                     professor["formacao_prof"] = input("Formação do Professor: ")
 
-                                listaProfessores.append(professor)
-                                listaCursos.append(curso)
-                                answer = input("Deseja continuar cadastrando Professores? (S/N): ").strip()[0].lower()
-                            else:
-                                continue
+                                    listaProfessores.append(professor)
+                                    listaCursos.append(curso)
+                                    answer = input("Deseja continuar cadastrando Professores? (S/N): ").strip()[0].lower()
+
+                                else:
+                                    continue
                     else:
+                        professor["mat_prof"] = input("Informe a matrícula do professor: ")
                         professor["nome_prof"] = input("Nome do Professor: ")
                         professor["cpf_prof"] = input("Cpf do Professor: ")
                         professor["formacao_prof"] = input("Formação do Professor: ")
 
-                        # curso["professor_responsavel"] = input(professor["mat_prof"],'Informe a matrícula do professor: ')
-                        # input("Professor Responsável: ")
+                        listaProfessores.append(professor)
+                        answer = input("Deseja continuar cadastrando Professores? (S/N): ").strip()[0].lower()
 
-                #listaCursos.append(curso)
+
                 answer = input("Deseja continuar cadastrando cursos? (S/N): ").strip()[0].lower()
+                listaCursos.append(curso)
 
-            with open('curso.json', 'w') as arquivo_curso:
-                json.dump(curso, arquivo_curso)
-
-
-            with open('professor.json', 'w') as arquivo_professor:
-                json.dump(professor, arquivo_professor)
-
-        # Pesquisar Cursos
+    # Pesquisar Cursos
         case 3:
            pesquisa()
 
@@ -204,9 +228,9 @@ while True:
                     print('++++++++++ Edição de Cursos ++++++++++\n')
                     editCurso = None
                     codigoCurso = input("Código do curso: ")
-                    for search_curso in listaCursos:
-                        if codigoCurso == search_curso["codigo_curso"]:
-                            editCurso = search_curso
+                    for curso, professor in zip(listaCursos, listaProfessores):
+                        if codigoCurso == curso["codigo_curso"]:
+                            editCurso = curso
                             print('Foi encontrado o curso ** {} ** com os dados informados\n'.format(curso["nome_curso"]))
                             ask = input('Tem certeza que deseja editar? (S/N): ').strip()[0].lower()
                             if ask == 's':
@@ -230,18 +254,17 @@ while True:
                 os.system('cls')
                 print('*'*8,'Cadastro de Professores','*'*8)
                 professor = dict()
-                professor_json = json.dumps(professor)
-                matProf = input("Informe a matrícula do professor: ")
+                matricula = input("Informe a matrícula do professor: ")
 
                 find = False
                 for search_prof in listaProfessores:
-                    if matProf == search_prof["mat_prof"]:
+                    if matricula == search_prof["mat_prof"]:
                         print('Professor já cadastrado')
                         find = True
                         break
 
                 if not find:
-                    professor["mat_prof"] = matProf
+                    professor["mat_prof"] = matricula
                     professor["nome_prof"] = input("Nome do Professor: ")
                     professor["cpf_prof"] = input("Cpf do Professor: ")
                     professor["formacao_prof"] = input("Formação do Professor: ")
@@ -255,29 +278,48 @@ while True:
                 print('Não há professores cadastrados')
             else:
                 os.system('cls')
-                print('Matrícula'.ljust(15), 'Nome'.ljust(8),  "\n")
+                print('Matrícula'.ljust(14), 'Nome'.ljust(17), 'Formação'.ljust(20), 'CPF'.ljust(14),  "\n")
                 for professor in listaProfessores:
-                    print(professor["mat_prof"].ljust(12), end='')
-                    print(professor["nome_prof"].ljust(20), "\n", end='')
-                    # print(professor["formacao_prof"].ljust(15), end='')
-                    # print(professor["cpf_prof"].ljust(18), "\n", end='')
+                    print(professor["mat_prof"].ljust(15), end='')
+                    print(professor["nome_prof"].ljust(18),  end='')
+                    print(professor["formacao_prof"].ljust(21), end='')
+                    print(professor["cpf_prof"].ljust(18), "\n", end='')
             answer = str(input('Digite 1 para voltar e 2 para pesquisar: '))
             if answer == '2':
                 pesqProf = input('Informe o nome ou a matrícula do professor: ')
                 for professor in listaProfessores:
                     if pesqProf == professor["nome_prof"] or pesqProf == professor["mat_prof"]:
                         print(f'Foi encontrado o professor: {professor["nome_prof"]}, com formacão em: {professor["formacao_prof"]}, e cpf: {professor["cpf_prof"]}')
-                    else:
-                        print('Professor não encontrado! ')
+
             elif answer == '1':
                 continue
 
         case 7:
-            excluir()
+            os.system('cls')
+            print('++++++++++ Exclusão de Professores ++++++++++\n')
+            print('Matrícula'.ljust(15), 'Nome'.ljust(8), '- Formação'.ljust(15), '- CPF'.ljust(15), "\n")
+            for professor in listaProfessores:
+                print(professor["mat_prof"].ljust(18), end='')
+                print(professor["nome_prof"].ljust(12), end='')
+                print(professor["formacao_prof"].ljust(15), end='')
+                print(professor["cpf_prof"].ljust(18), "\n", end='')
+            search = input('Informe o nome ou a matricula do professor a ser deletado: ')
+            for buscaProf in listaProfessores:
+                if search == professor["nome_prof"] or search == professor["mat_prof"]:
+                    print(f'Você informou o professor: {professor["nome_prof"]}', "\n", end='')
+                    answer = str(input('Tem certeza que deseja deletar? (S/N)')).strip()[0].lower()
+                    if answer == 's':
+                        listaProfessores.remove(professor)
+                        print('Professor deletado com sucesso!')
+                    else:
+                        break
+            # excluir()
 
         #Encerrar Programa
         case 8:
-            print('Encerrando Programa...')
+            salvarDadosCurso('curso', listaCursos)
+            salvarDadosProfessor('professor', listaProfessores)
+            print('Salvando informações e encerrando Programa...')
             break
 
 
